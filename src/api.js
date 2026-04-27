@@ -1,6 +1,4 @@
-const API_BASE = process.env.NODE_ENV === 'production' 
-  ? '/api' // Use relative path for Vercel serverless functions
-  : 'http://localhost:3001/api'; // Use localhost for development
+const API_BASE = 'http://localhost:3001/api';
 
 // API helper functions
 const api = {
@@ -11,47 +9,12 @@ const api = {
   },
 
   registerUser: async (userData) => {
-    try {
-      console.log('=== API DEBUG ===');
-      console.log('Sending to:', `${API_BASE}/users`);
-      console.log('Request data:', userData);
-      
-      const response = await fetch(`${API_BASE}/users`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData)
-      });
-      
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
-      
-      const responseText = await response.text();
-      console.log('Raw response:', responseText);
-      
-      if (!response.ok) {
-        let errorData;
-        try {
-          errorData = JSON.parse(responseText);
-        } catch {
-          errorData = { error: responseText || `HTTP error! status: ${response.status}` };
-        }
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-      }
-      
-      let result;
-      try {
-        result = JSON.parse(responseText);
-      } catch {
-        throw new Error(`Invalid JSON response: ${responseText}`);
-      }
-      
-      console.log('Parsed result:', result);
-      console.log('================');
-      return result;
-    } catch (error) {
-      console.error('Registration API Error:', error);
-      throw error;
-    }
+    const response = await fetch(`${API_BASE}/users`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+    return response.json();
   },
 
   login: async (username, password) => {
@@ -64,7 +27,7 @@ const api = {
   },
 
   updateUserStatus: async (userId, status) => {
-    const response = await fetch(`${API_BASE}/users/${userId}`, {
+    const response = await fetch(`${API_BASE}/users/${userId}/status`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status })
@@ -88,31 +51,29 @@ const api = {
   },
 
   acceptIncident: async (incidentId, user) => {
-    const response = await fetch(`${API_BASE}/incidents?id=${incidentId}`, {
+    const response = await fetch(`${API_BASE}/incidents/${incidentId}/accept`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user, action: 'accept' })
+      body: JSON.stringify({ user })
     });
     return response.json();
   },
 
   resolveIncident: async (incidentId) => {
-    const response = await fetch(`${API_BASE}/incidents?id=${incidentId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'resolve' })
+    const response = await fetch(`${API_BASE}/incidents/${incidentId}/resolve`, {
+      method: 'PUT'
     });
     return response.json();
   },
 
   // Chats
   getChat: async (incidentId) => {
-    const response = await fetch(`${API_BASE}/chat?incidentId=${incidentId}`);
+    const response = await fetch(`${API_BASE}/chats/${incidentId}`);
     return response.json();
   },
 
   sendMessage: async (incidentId, messageData) => {
-    const response = await fetch(`${API_BASE}/chat?incidentId=${incidentId}`, {
+    const response = await fetch(`${API_BASE}/chats/${incidentId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(messageData)

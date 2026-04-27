@@ -7,45 +7,10 @@
       "config": {
         "distDir": "build"
       }
-    }
-  ],
-  "functions": {
-    "api/users.js": {
-      "runtime": "nodejs18.x"
-    },
-    "api/login.js": {
-      "runtime": "nodejs18.x"
-    },
-    "api/incidents.js": {
-      "runtime": "nodejs18.x"
-    },
-    "api/chat.js": {
-      "runtime": "nodejs18.x"
-    },
-    "api/users/[id].js": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/users",
-      "destination": "/api/users.js"
     },
     {
-      "source": "/api/login",
-      "destination": "/api/login.js"
-    },
-    {
-      "source": "/api/incidents",
-      "destination": "/api/incidents.js"
-    },
-    {
-      "source": "/api/chat",
-      "destination": "/api/chat.js"
-    },
-    {
-      "source": "/api/users/:id",
-      "destination": "/api/users/[id].js"
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
     }
   ]
 }

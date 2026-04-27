@@ -18,13 +18,13 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
+    res.status(200).json({ success: true });
     return;
   }
 
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    res.status(405).json({ error: `Method ${req.method} Not Allowed` });
     return;
   }
 
@@ -39,6 +39,6 @@ export default async function handler(req, res) {
     res.status(200).json({ user });
   } catch (error) {
     console.error('Login Error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Internal Server Error', details: error.message });
   }
 }

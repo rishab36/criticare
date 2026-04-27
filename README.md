@@ -67,14 +67,23 @@ The frontend will run on `http://localhost:3000`
 
 ### Backend Deployment Options
 
-#### Option 1: Render (Recommended)
+#### Option 1: Render (Recommended - Free)
 1. Create account at [render.com](https://render.com)
-2. Create new "Web Service"
-3. Connect your GitHub repository
-4. Set build command: `npm install`
-5. Set start command: `node server.js`
-6. Deploy
-7. Copy the backend URL and use it as `REACT_APP_API_URL` in Vercel
+2. Click "New +" → "Web Service"
+3. Connect your GitHub repository (the same one)
+4. Configure:
+   - **Name**: criticare-backend
+   - **Region**: Singapore (or closest to you)
+   - **Branch**: master
+   - **Runtime**: Node
+   - **Build Command**: `npm install`
+   - **Start Command**: `node server.js`
+5. Click "Deploy Web Service"
+6. Wait for deployment to complete (2-3 minutes)
+7. Copy the backend URL (e.g., `https://criticare-backend.onrender.com`)
+8. Use this URL + `/api` as your `REACT_APP_API_URL` in Vercel
+
+**Example Backend URL**: `https://criticare-backend.onrender.com/api`
 
 #### Option 2: Railway
 1. Create account at [railway.app](https://railway.app)

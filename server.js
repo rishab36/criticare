@@ -1,10 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
-// Middleware
-app.use(cors());
+// CORS configuration - allow all origins for development
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://criticare.vercel.app', /.+\.vercel\.app$/],
+  credentials: true
+}));
 app.use(express.json());
 
 // In-memory storage (replace with database later)

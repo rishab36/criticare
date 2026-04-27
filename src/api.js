@@ -12,18 +12,42 @@ const api = {
 
   registerUser: async (userData) => {
     try {
+      console.log('=== API DEBUG ===');
+      console.log('Sending to:', `${API_BASE}/users`);
+      console.log('Request data:', userData);
+      
       const response = await fetch(`${API_BASE}/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData)
       });
       
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+      
+      const responseText = await response.text();
+      console.log('Raw response:', responseText);
+      
       if (!response.ok) {
-        const errorData = await response.json();
+        let errorData;
+        try {
+          errorData = JSON.parse(responseText);
+        } catch {
+          errorData = { error: responseText || `HTTP error! status: ${response.status}` };
+        }
         throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
       
-      return response.json();
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch {
+        throw new Error(`Invalid JSON response: ${responseText}`);
+      }
+      
+      console.log('Parsed result:', result);
+      console.log('================');
+      return result;
     } catch (error) {
       console.error('Registration API Error:', error);
       throw error;

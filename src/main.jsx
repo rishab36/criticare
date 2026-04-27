@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import api from "./api";
 
 // ─── STYLES ───────────────────────────────────────────────────────────────────
@@ -322,16 +322,16 @@ const ChatPanel = ({ incidentId, chats, onSend, currentUser, incident }) => {
       
       return () => clearInterval(interval);
     }
-  }, [incidentId]);
+  }, [incidentId, loadChatMessages]);
 
-  const loadChatMessages = async () => {
+  const loadChatMessages = useCallback(async () => {
     try {
       const chatMessages = await api.getChat(incidentId);
       setMessages(chatMessages);
     } catch (error) {
       console.error('Failed to load chat messages:', error);
     }
-  };
+  }, [incidentId]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior:"smooth" }); }, [messages]);
 
@@ -567,7 +567,7 @@ const AuthPage = ({ store }) => {
 
 // ─── ADMIN DASHBOARD ──────────────────────────────────────────────────────────
 const AdminDashboard = ({ store }) => {
-  const { users, incidents, chats, currentUser, fireAlert, resolveIncident, sendMessage, logout, refreshFromStorage, registerUser } = store;
+  const { users, incidents, chats, currentUser, fireAlert, resolveIncident, sendMessage, logout, refreshFromStorage } = store;
   const [tab, setTab] = useState("incidents");
   const [selInc, setSelInc] = useState(null);
   const [sos, setSos] = useState({ department:"Cardio", severity:"Critical", room:"", floor:"", note:"" });
@@ -599,7 +599,7 @@ const AdminDashboard = ({ store }) => {
       clearInterval(interval);
       window.removeEventListener('focus', handleFocus);
     };
-  }, []);
+  }, [refreshFromStorage]);
 
   const fire = () => {
     if (!sos.room.trim()) return;
@@ -867,12 +867,12 @@ const StaffDashboard = ({ store }) => {
       refreshFromStorage();
     }, 2000);
     return () => clearInterval(interval);
-  }, []);
+  }, [refreshFromStorage]);
 
   // Auto-select active incident and close chat when resolved
   useEffect(() => {
     if (myActiveInc && selInc !== myActiveInc.id) setSelInc(myActiveInc.id);
-  }, [myActiveInc?.id]);
+  }, [myActiveInc?.id, selInc]);
 
   // Close chat if current incident is resolved
   useEffect(() => {

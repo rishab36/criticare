@@ -1,4 +1,6 @@
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = process.env.NODE_ENV === 'production' 
+  ? '/api' // Use relative path for Vercel serverless functions
+  : 'http://localhost:3001/api'; // Use localhost for development
 
 // API helper functions
 const api = {
@@ -27,7 +29,7 @@ const api = {
   },
 
   updateUserStatus: async (userId, status) => {
-    const response = await fetch(`${API_BASE}/users/${userId}/status`, {
+    const response = await fetch(`${API_BASE}/users/${userId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status })
@@ -51,29 +53,31 @@ const api = {
   },
 
   acceptIncident: async (incidentId, user) => {
-    const response = await fetch(`${API_BASE}/incidents/${incidentId}/accept`, {
+    const response = await fetch(`${API_BASE}/incidents?id=${incidentId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user })
+      body: JSON.stringify({ user, action: 'accept' })
     });
     return response.json();
   },
 
   resolveIncident: async (incidentId) => {
-    const response = await fetch(`${API_BASE}/incidents/${incidentId}/resolve`, {
-      method: 'PUT'
+    const response = await fetch(`${API_BASE}/incidents?id=${incidentId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'resolve' })
     });
     return response.json();
   },
 
   // Chats
   getChat: async (incidentId) => {
-    const response = await fetch(`${API_BASE}/chats/${incidentId}`);
+    const response = await fetch(`${API_BASE}/chat?incidentId=${incidentId}`);
     return response.json();
   },
 
   sendMessage: async (incidentId, messageData) => {
-    const response = await fetch(`${API_BASE}/chats/${incidentId}`, {
+    const response = await fetch(`${API_BASE}/chat?incidentId=${incidentId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(messageData)

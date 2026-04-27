@@ -310,6 +310,15 @@ const ChatPanel = ({ incidentId, chats, onSend, currentUser, incident }) => {
   const bottomRef = useRef();
   const fileRef   = useRef();
 
+  const loadChatMessages = useCallback(async () => {
+    try {
+      const chatMessages = await api.getChat(incidentId);
+      setMessages(chatMessages);
+    } catch (error) {
+      console.error('Failed to load chat messages:', error);
+    }
+  }, [incidentId]);
+
   // Load chat messages and set up real-time polling
   useEffect(() => {
     if (incidentId) {
@@ -323,15 +332,6 @@ const ChatPanel = ({ incidentId, chats, onSend, currentUser, incident }) => {
       return () => clearInterval(interval);
     }
   }, [incidentId, loadChatMessages]);
-
-  const loadChatMessages = useCallback(async () => {
-    try {
-      const chatMessages = await api.getChat(incidentId);
-      setMessages(chatMessages);
-    } catch (error) {
-      console.error('Failed to load chat messages:', error);
-    }
-  }, [incidentId]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior:"smooth" }); }, [messages]);
 
@@ -872,7 +872,7 @@ const StaffDashboard = ({ store }) => {
   // Auto-select active incident and close chat when resolved
   useEffect(() => {
     if (myActiveInc && selInc !== myActiveInc.id) setSelInc(myActiveInc.id);
-  }, [myActiveInc?.id, selInc]);
+  }, [myActiveInc, selInc]);
 
   // Close chat if current incident is resolved
   useEffect(() => {
